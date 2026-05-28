@@ -234,10 +234,10 @@ export default function DashboardMockup() {
                     className="text-gray-400 border-l-2 border-cyber-cyan/30 pl-3 py-1"
                   >
                     <span className="text-cyber-cyan/60">
-                      {log.split("]")[0]}]
+                      {log?.split("]")[0]}]
                     </span>
                     <span className="text-gray-300">
-                      {log.split("]")[1]}
+                      {log?.split("]")[1]}
                     </span>
                   </motion.div>
                 ))}

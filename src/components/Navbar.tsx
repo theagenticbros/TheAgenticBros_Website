@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import MagneticButton from "./MagneticButton";
 
@@ -24,15 +24,16 @@ export default function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-cyan-500/10"
     >
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        {/* Logo (Left) */}
         <Link
           href="/"
-          className="font-heading text-xl md:text-2xl font-bold tracking-tighter text-white"
+          className="font-heading text-xl md:text-2xl font-bold tracking-tighter text-white z-10 w-48"
         >
           THE AGENTIC <span className="text-cyber-cyan">BROS</span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Desktop Nav (Center) */}
+        <div className="hidden md:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -42,14 +43,25 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <MagneticButton variant="primary" size="sm">
-            Book a Call
-          </MagneticButton>
+        </div>
+
+        {/* CTA (Right) */}
+        <div className="hidden md:flex justify-end w-48">
+          <Link href="#contact" className="group">
+            <div className="border border-cyber-cyan/30 bg-black/40 backdrop-blur-xl h-10 lg:h-12 rounded-full flex items-center transition-all duration-300 group-hover:scale-105 group-hover:border-cyber-cyan group-hover:shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+              <div className="pl-5 pr-4 text-sm font-medium text-white transition-colors group-hover:text-cyber-cyan">
+                Start Your Project
+              </div>
+              <div className="bg-cyber-cyan h-[85%] aspect-square rounded-full flex items-center justify-center mr-1">
+                <ArrowRight className="w-5 h-5 text-black -rotate-45 transition-transform duration-300 group-hover:rotate-0" />
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden text-white p-2"
+          className="md:hidden text-white p-2 z-10"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
@@ -79,7 +91,7 @@ export default function Navbar() {
               ))}
               <div className="pt-2">
                 <MagneticButton variant="primary" size="md" className="w-full">
-                  Book a Call
+                  Start Your Project
                 </MagneticButton>
               </div>
             </div>
