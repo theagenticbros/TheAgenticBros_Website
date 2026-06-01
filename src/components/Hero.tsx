@@ -161,15 +161,23 @@ export default function Hero() {
     <section className="relative min-h-[100dvh] w-full overflow-hidden bg-black">
       <canvas ref={canvasRef} className="absolute inset-0 z-0" />
 
+      {/* Vignette */}
       <div
         className="absolute inset-0 z-10 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.65) 100%)" }}
+        style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)" }}
+      />
+      {/* Text shield — darkens left column where copy lives */}
+      <div
+        className="absolute inset-0 z-10 pointer-events-none"
+        style={{ background: "linear-gradient(105deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.72) 30%, rgba(0,0,0,0.2) 55%, transparent 75%)" }}
       />
 
+      {/* Watermark */}
       <h2 className="absolute top-[15%] left-1/2 -translate-x-1/2 text-[12vw] font-bold text-nowrap text-center opacity-[0.04] tracking-tighter z-10 pointer-events-none select-none text-white">
         THE AGENTIC BROS
       </h2>
 
+      {/* Main content */}
       <div className="absolute inset-0 z-20 flex flex-col justify-end pb-12 sm:pb-24">
         <div className="max-w-7xl mx-auto px-6 w-full">
           <motion.div
