@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-const COUNT = 14000;
+const COUNT = 7000;
 
 function buildSphere(n: number) {
   const pts: { bx: number; by: number; bz: number }[] = [];
