@@ -11,8 +11,8 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "#differentiator", label: "Why Us" },
-    { href: "#proof", label: "Proof" },
     { href: "#services", label: "Services" },
+    { href: "#process", label: "Process" },
     { href: "#contact", label: "Contact" },
   ];
 

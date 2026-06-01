@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Palette, Code, Cpu, Database, Bot, Layout, LayoutTemplate, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import ParticleCanvas from "./ParticleCanvas";
@@ -71,7 +71,7 @@ function ServiceBlock({
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           viewport={{ once: true, margin: "-20%" }}
-          className="glass-panel p-8 md:p-12 rounded-3xl border border-gray-800 hover:border-cyber-cyan/30 transition-all duration-500 relative overflow-hidden group bg-black/80 backdrop-blur-md"
+          className="glass-panel p-8 md:p-12 rounded-2xl border border-gray-800 hover:border-cyber-cyan/40 transition-all duration-500 relative overflow-hidden group bg-black/80 backdrop-blur-md"
         >
           <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
           <div className="absolute top-0 right-0 w-64 h-64 bg-cyber-cyan/10 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -79,10 +79,6 @@ function ServiceBlock({
           <div className="relative z-10">
             <div className="w-16 h-16 rounded-2xl bg-black border border-gray-800 flex items-center justify-center mb-8 group-hover:border-cyber-cyan/30 group-hover:bg-cyber-cyan/10 transition-colors duration-300">
               <service.icon className="w-8 h-8 text-cyber-cyan" />
-            </div>
-            
-            <div className="font-mono text-cyber-cyan text-sm mb-3 font-semibold tracking-wider">
-              0{index + 1} //
             </div>
             
             <h3 className="font-heading text-3xl md:text-4xl font-bold mb-4 text-white group-hover:text-cyber-cyan transition-colors duration-300">
@@ -145,7 +141,7 @@ export default function Services() {
               <span className="text-cyber-cyan">Our Services</span>
             </h2>
             <p className="text-gray-400 text-xl leading-relaxed">
-              We offer comprehensive digital solutions that transform your business and drive innovation across every touchpoint.
+              Six disciplines, one throughline: systems that work while you don't.
             </p>
           </motion.div>
         </div>

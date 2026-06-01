@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import ScrollReveal from "./ScrollReveal";
 import { Search, PenTool, Code2, Rocket, LineChart } from "lucide-react";
 import RoboticHandCanvas from "./RoboticHandCanvas";
@@ -56,7 +56,7 @@ export default function HowWeWork() {
             How We <span className="text-cyber-cyan">Work</span>
           </h2>
           <p className="text-gray-400 text-lg">
-            A battle-tested methodology to transform your business operations from manual to autonomous.
+            Five phases. Each one hands off cleanly to the next. Nothing ships until it works under pressure.
           </p>
         </ScrollReveal>
 
@@ -98,9 +98,6 @@ export default function HowWeWork() {
                       viewport={{ once: true }}
                       className="glass-panel p-8 rounded-2xl border border-gray-800 hover:border-cyber-cyan/30 transition-colors w-full text-left bg-black/60 backdrop-blur-md"
                     >
-                      <div className="font-mono text-4xl font-bold text-gray-800 mb-4 flex justify-start">
-                        {step.num}
-                      </div>
                       <h3 className="font-heading text-2xl font-bold text-white mb-3">
                         {step.title}
                       </h3>

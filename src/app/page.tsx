@@ -11,10 +11,10 @@ export default function Home() {
     <main className="min-h-screen bg-black text-white selection:bg-cyber-cyan selection:text-black relative">
       <Navbar />
       <Hero />
+      <Differentiator />
       <Services />
       <HowWeWork />
       <DashboardMockup />
-      <Differentiator />
       <Footer />
     </main>
   );

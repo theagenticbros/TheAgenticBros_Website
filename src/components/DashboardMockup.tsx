@@ -94,11 +94,11 @@ export default function DashboardMockup() {
       <div className="max-w-7xl mx-auto px-6" ref={ref}>
         <ScrollReveal className="text-center mb-16">
           <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
-            Live <span className="text-cyber-cyan">Proof</span>
+            The Stack <span className="text-cyber-cyan">in Action</span>
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            See the engine in action. Real-time automation pipelines that never
-            sleep.
+            A walkthrough of a typical automation cycle: scrape, analyze, act.
+            This is what runs after a project ships.
           </p>
         </ScrollReveal>
 
@@ -231,7 +231,7 @@ export default function DashboardMockup() {
                     key={`${log}-${i}`}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="text-gray-400 border-l-2 border-cyber-cyan/30 pl-3 py-1"
+                    className="text-gray-400 pl-1 py-1"
                   >
                     <span className="text-cyber-cyan/60">
                       {log?.split("]")[0]}]

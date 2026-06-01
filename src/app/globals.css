@@ -44,3 +44,15 @@
   background: #00f0ff;
   color: #000000;
 }
+
+/* Reduced motion — collapse all animations to instant crossfade */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

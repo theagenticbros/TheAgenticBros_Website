@@ -1,11 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, ArrowRight } from "lucide-react";
+import { Mail } from "lucide-react";
 import { FaGithub, FaXTwitter, FaLinkedin } from "react-icons/fa6";
 import MagneticButton from "./MagneticButton";
 import ScrollReveal from "./ScrollReveal";
-import Link from "next/link";
 import { useState } from "react";
 
 export default function Footer() {
@@ -49,28 +48,15 @@ export default function Footer() {
 
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <ScrollReveal>
-            <h2 className="font-heading text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            <h2 className="font-heading text-5xl md:text-7xl font-bold mb-6 leading-tight text-wrap-balance">
               Ready to scale
               <br />
               <span className="text-cyber-cyan">without the headcount?</span>
             </h2>
-            <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">
-              Let's architect your autonomous revenue engine. Book a strategy
-              call and see what's possible.
+            <p className="text-gray-400 text-xl mb-12 max-w-xl mx-auto">
+              Tell us what you're building. We'll tell you what it takes to
+              automate it.
             </p>
-
-            <div className="flex justify-center mb-16">
-              <Link href="#contact" className="group">
-                <div className="border border-cyber-cyan/30 bg-black/40 backdrop-blur-xl h-14 lg:h-16 rounded-full flex items-center transition-all duration-300 group-hover:scale-105 group-hover:border-cyber-cyan group-hover:shadow-[0_0_30px_rgba(0,240,255,0.2)]">
-                  <div className="pl-8 pr-6 text-base lg:text-lg font-semibold text-white transition-colors group-hover:text-cyber-cyan">
-                    Start Your Project
-                  </div>
-                  <div className="bg-white h-[85%] aspect-square rounded-full flex items-center justify-center mr-1.5 transition-colors duration-300 group-hover:bg-cyber-cyan">
-                    <ArrowRight className="w-6 h-6 text-black -rotate-45 transition-transform duration-300 group-hover:rotate-0" />
-                  </div>
-                </div>
-              </Link>
-            </div>
           </ScrollReveal>
 
           {/* Contact Form */}
@@ -90,7 +76,7 @@ export default function Footer() {
                     required
                     disabled={status === "submitting"}
                     className="w-full bg-black/50 border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-cyber-cyan focus:outline-none focus:ring-1 focus:ring-cyber-cyan transition-all placeholder:text-gray-600 disabled:opacity-50"
-                    placeholder="John Doe"
+                    placeholder="Your name"
                   />
                 </div>
                 <div>
