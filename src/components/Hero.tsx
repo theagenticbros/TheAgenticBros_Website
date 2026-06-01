@@ -30,9 +30,14 @@ function hslToRgb(h: number, s: number, l: number) {
   return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)] as const;
 }
 
+// Mouse repulsion constants
+const REPEL_R = 140;   // radius in screen px
+const REPEL_F = 9;     // push strength
+
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollRef = useRef(0);
+  const mouseRef = useRef({ x: -9999, y: -9999 });
   const prefersReduced = useReducedMotion();
 
   useEffect(() => {
@@ -61,16 +66,28 @@ export default function Hero() {
     window.addEventListener("resize", resize, { passive: true });
 
     const onScroll = () => {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      scrollRef.current = maxScroll > 0 ? Math.min(window.scrollY / maxScroll, 1) : 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      scrollRef.current = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+
+    // Track mouse relative to the canvas
+    const onMouseMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+    const onMouseLeave = () => {
+      mouseRef.current = { x: -9999, y: -9999 };
+    };
+    canvas.addEventListener("mousemove", onMouseMove, { passive: true });
+    canvas.addEventListener("mouseleave", onMouseLeave);
 
     const draw = () => {
       const W = canvas.width;
       const H = canvas.height;
       const elapsed = (performance.now() - startTime) / 1000;
       const scroll = scrollRef.current;
+      const mx = mouseRef.current.x;
+      const my = mouseRef.current.y;
 
       if (prefersReduced) {
         ctx.fillStyle = "#000";
@@ -83,6 +100,7 @@ export default function Hero() {
         return;
       }
 
+      // Motion-trail fill — creates glow smear effect
       ctx.fillStyle = "rgba(0,0,0,0.18)";
       ctx.fillRect(0, 0, W, H);
 
@@ -102,46 +120,71 @@ export default function Hero() {
         const sy = by * rBase;
         const sz = bz * rBase;
 
-        const w = 55 * Math.sin(t * Math.PI * 9 + elapsed * 0.22);
+        // 4D tesseract projection
+        const w4 = 55 * Math.sin(t * Math.PI * 9 + elapsed * 0.22);
         const angle4 = elapsed * 0.07 + t * 0.44;
         const c4 = Math.cos(angle4);
         const s4 = Math.sin(angle4);
-        const px = sx * c4 - w * s4;
+        const px = sx * c4 - w4 * s4;
         const py = sy;
-        const pz = sz * c4 + w * s4 * 0.55;
+        const pz = sz * c4 + w4 * s4 * 0.55;
 
+        // Curl-noise turbulence
         const f = 0.008;
         const A = 38;
-        const tx = A * Math.sin(f * py * 3.71 + elapsed * 0.58) * Math.cos(f * pz * 2.29 + elapsed * 0.43);
-        const ty = A * Math.sin(f * pz * 4.13 + elapsed * 0.52) * Math.cos(f * px * 3.07 + elapsed * 0.69);
-        const tz = A * Math.cos(f * px * 2.93 + elapsed * 0.77) * Math.sin(f * py * 4.71 + elapsed * 0.34);
+        const ttx = A * Math.sin(f * py * 3.71 + elapsed * 0.58) * Math.cos(f * pz * 2.29 + elapsed * 0.43);
+        const tty = A * Math.sin(f * pz * 4.13 + elapsed * 0.52) * Math.cos(f * px * 3.07 + elapsed * 0.69);
 
         const invR = 1 / (rBase + 0.001);
-        const nx = (px + tx) * fade + burst * (sx * invR);
-        const ny = (py + ty) * fade + burst * (sy * invR);
-        const nz = (pz + tz) * fade + burst * (sz * invR);
+        const nx = (px + ttx) * fade + burst * (sx * invR);
+        const ny = (py + tty) * fade + burst * (sy * invR);
+        const nz = pz * fade + burst * (sz * invR);
 
         posX[i] += (nx - posX[i]) * 0.07;
         posY[i] += (ny - posY[i]) * 0.07;
         posZ[i] += (nz - posZ[i]) * 0.07;
 
+        // Perspective projection
         const depth = posZ[i] + 400;
         if (depth < 1) continue;
         const scale = FL / depth;
-        const screenX = cx + posX[i] * scale;
-        const screenY = cy + posY[i] * scale;
+        let screenX = cx + posX[i] * scale;
+        let screenY = cy + posY[i] * scale;
+
+        // ── Mouse repulsion in screen space ──────────────────────────────────
+        // Applied AFTER projection so it feels natural on the 2D surface
+        const mdx = screenX - mx;
+        const mdy = screenY - my;
+        const md2 = mdx * mdx + mdy * mdy;
+        if (md2 < REPEL_R * REPEL_R && md2 > 0.01) {
+          const md = Math.sqrt(md2);
+          // Quadratic falloff: strongest at center, zero at edge
+          const force = ((1 - md / REPEL_R) ** 2) * REPEL_F;
+          screenX += (mdx / md) * force;
+          screenY += (mdy / md) * force;
+        }
+
         if (screenX < -20 || screenX > W + 20 || screenY < -20 || screenY > H + 20) continue;
 
+        // Depth-aware color
         const depthN = Math.max(0, Math.min(1, (posZ[i] + 300) / 600));
-        const hue = ((t * 0.38 + elapsed * 0.013 + depthN * 0.18) % 1 + 1) % 1;
+
+        // Brighten particles near cursor
+        const distToCursor2 = (screenX - mx) ** 2 + (screenY - my) ** 2;
+        const cursorGlow = distToCursor2 < 200 * 200
+          ? (1 - Math.sqrt(distToCursor2) / 200) * 0.5
+          : 0;
+
+        const hue = ((t * 0.38 + elapsed * 0.013 + depthN * 0.18 + cursorGlow * 0.15) % 1 + 1) % 1;
         const sat = 0.62 + depthN * 0.38;
-        const lit = Math.max(0.04, Math.min(0.9, 0.28 + depthN * 0.55 - scroll2 * 0.28));
+        const lit = Math.max(0.04, Math.min(0.95, 0.28 + depthN * 0.55 + cursorGlow * 0.4 - scroll2 * 0.28));
         const [r, g, b] = hslToRgb(hue, sat, lit);
         const radius = Math.max(0.4, scale * 0.8);
+        const alpha = 0.7 + depthN * 0.3;
 
         ctx.beginPath();
         ctx.arc(screenX, screenY, radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + (0.7 + depthN * 0.3) + ")";
+        ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
         ctx.fill();
       }
 
@@ -154,6 +197,8 @@ export default function Hero() {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", onScroll);
+      canvas.removeEventListener("mousemove", onMouseMove);
+      canvas.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [prefersReduced]);
 
@@ -166,7 +211,7 @@ export default function Hero() {
         className="absolute inset-0 z-10 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)" }}
       />
-      {/* Text shield — darkens left column where copy lives */}
+      {/* Text shield */}
       <div
         className="absolute inset-0 z-10 pointer-events-none"
         style={{ background: "linear-gradient(105deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.72) 30%, rgba(0,0,0,0.2) 55%, transparent 75%)" }}
