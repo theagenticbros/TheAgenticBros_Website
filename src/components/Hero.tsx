@@ -6,6 +6,8 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const COUNT = 7000;
+const REPEL_R = 220;  // screen-space repulsion radius (px)
+const REPEL_F = 55;   // repulsion strength in world units
 
 function buildSphere(n: number) {
   const pts: { bx: number; by: number; bz: number }[] = [];
@@ -29,10 +31,6 @@ function hslToRgb(h: number, s: number, l: number) {
   };
   return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)] as const;
 }
-
-// Mouse repulsion constants
-const REPEL_R = 140;   // radius in screen px
-const REPEL_F = 9;     // push strength
 
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -71,13 +69,10 @@ export default function Hero() {
     };
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    // Track mouse relative to the canvas
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
     };
-    const onMouseLeave = () => {
-      mouseRef.current = { x: -9999, y: -9999 };
-    };
+    const onMouseLeave = () => { mouseRef.current = { x: -9999, y: -9999 }; };
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     window.addEventListener("mouseleave", onMouseLeave);
 
@@ -100,7 +95,6 @@ export default function Hero() {
         return;
       }
 
-      // Motion-trail fill — creates glow smear effect
       ctx.fillStyle = "rgba(0,0,0,0.18)";
       ctx.fillRect(0, 0, W, H);
 
@@ -130,8 +124,7 @@ export default function Hero() {
         const pz = sz * c4 + w4 * s4 * 0.55;
 
         // Curl-noise turbulence
-        const f = 0.008;
-        const A = 38;
+        const f = 0.008, A = 38;
         const ttx = A * Math.sin(f * py * 3.71 + elapsed * 0.58) * Math.cos(f * pz * 2.29 + elapsed * 0.43);
         const tty = A * Math.sin(f * pz * 4.13 + elapsed * 0.52) * Math.cos(f * px * 3.07 + elapsed * 0.69);
 
@@ -140,51 +133,51 @@ export default function Hero() {
         const ny = (py + tty) * fade + burst * (sy * invR);
         const nz = pz * fade + burst * (sz * invR);
 
+        // Lerp toward target
         posX[i] += (nx - posX[i]) * 0.07;
         posY[i] += (ny - posY[i]) * 0.07;
         posZ[i] += (nz - posZ[i]) * 0.07;
 
-        // Perspective projection
+        // Perspective project FIRST to get screen coords
         const depth = posZ[i] + 400;
         if (depth < 1) continue;
         const scale = FL / depth;
-        let screenX = cx + posX[i] * scale;
-        let screenY = cy + posY[i] * scale;
+        const screenX = cx + posX[i] * scale;
+        const screenY = cy + posY[i] * scale;
 
-        // ── Mouse repulsion in screen space ──────────────────────────────────
-        // Applied AFTER projection so it feels natural on the 2D surface
+        // ── Mouse repulsion: push world-space position ──────────────────────
+        // Measure distance in screen space (intuitive), apply force in world space
+        // so it accumulates across frames and particles truly flee the cursor.
         const mdx = screenX - mx;
         const mdy = screenY - my;
         const md2 = mdx * mdx + mdy * mdy;
         if (md2 < REPEL_R * REPEL_R && md2 > 0.01) {
           const md = Math.sqrt(md2);
-          // Quadratic falloff: strongest at center, zero at edge
           const force = ((1 - md / REPEL_R) ** 2) * REPEL_F;
-          screenX += (mdx / md) * force;
-          screenY += (mdy / md) * force;
+          // Divide by scale to convert screen-space push → world-space units
+          posX[i] += (mdx / md) * (force / scale);
+          posY[i] += (mdy / md) * (force / scale);
         }
 
-        if (screenX < -20 || screenX > W + 20 || screenY < -20 || screenY > H + 20) continue;
+        // Re-project with updated world position
+        const finalX = cx + posX[i] * scale;
+        const finalY = cy + posY[i] * scale;
+        if (finalX < -20 || finalX > W + 20 || finalY < -20 || finalY > H + 20) continue;
 
-        // Depth-aware color
+        // Depth-aware color + cursor glow
         const depthN = Math.max(0, Math.min(1, (posZ[i] + 300) / 600));
-
-        // Brighten particles near cursor
-        const distToCursor2 = (screenX - mx) ** 2 + (screenY - my) ** 2;
-        const cursorGlow = distToCursor2 < 200 * 200
-          ? (1 - Math.sqrt(distToCursor2) / 200) * 0.5
-          : 0;
+        const d2cursor = (finalX - mx) ** 2 + (finalY - my) ** 2;
+        const cursorGlow = d2cursor < 200 * 200 ? (1 - Math.sqrt(d2cursor) / 200) * 0.55 : 0;
 
         const hue = ((t * 0.38 + elapsed * 0.013 + depthN * 0.18 + cursorGlow * 0.15) % 1 + 1) % 1;
         const sat = 0.62 + depthN * 0.38;
-        const lit = Math.max(0.04, Math.min(0.95, 0.28 + depthN * 0.55 + cursorGlow * 0.4 - scroll2 * 0.28));
+        const lit = Math.max(0.04, Math.min(0.95, 0.28 + depthN * 0.55 + cursorGlow * 0.45 - scroll2 * 0.28));
         const [r, g, b] = hslToRgb(hue, sat, lit);
         const radius = Math.max(0.4, scale * 0.8);
-        const alpha = 0.7 + depthN * 0.3;
 
         ctx.beginPath();
-        ctx.arc(screenX, screenY, radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+        ctx.arc(finalX, finalY, radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + (0.7 + depthN * 0.3) + ")";
         ctx.fill();
       }
 
