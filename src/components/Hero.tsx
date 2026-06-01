@@ -78,8 +78,8 @@ export default function Hero() {
     const onMouseLeave = () => {
       mouseRef.current = { x: -9999, y: -9999 };
     };
-    canvas.addEventListener("mousemove", onMouseMove, { passive: true });
-    canvas.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("mouseleave", onMouseLeave);
 
     const draw = () => {
       const W = canvas.width;
@@ -197,8 +197,8 @@ export default function Hero() {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", onScroll);
-      canvas.removeEventListener("mousemove", onMouseMove);
-      canvas.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseleave", onMouseLeave);
     };
   }, [prefersReduced]);
 
