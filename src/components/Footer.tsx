@@ -109,11 +109,15 @@ export default function Footer() {
                 {/* Honeypot for spam prevention */}
                 <input type="hidden" name="_captcha" value="false" />
 
-                <button type="submit" disabled={status === "submitting"} className="w-full relative group disabled:opacity-70">
-                  <MagneticButton variant="primary" size="md" className="w-full pointer-events-none">
-                    {status === "submitting" ? "Sending..." : "Send Message"}
-                  </MagneticButton>
-                </button>
+                <MagneticButton
+                  type="submit"
+                  disabled={status === "submitting"}
+                  variant="primary"
+                  size="md"
+                  className="w-full relative group disabled:opacity-70"
+                >
+                  {status === "submitting" ? "Sending..." : "Send Message"}
+                </MagneticButton>
                 
                 {status === "success" && (
                   <p className="text-cyber-cyan text-sm text-center mt-4">Message sent successfully! We'll be in touch.</p>

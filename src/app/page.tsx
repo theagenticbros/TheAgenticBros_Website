@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Differentiator from "@/components/Differentiator";
+import Portfolio from "@/components/Portfolio";
 import DashboardMockup from "@/components/DashboardMockup";
 import Services from "@/components/Services";
 import HowWeWork from "@/components/HowWeWork";
@@ -12,6 +13,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Differentiator />
+      <Portfolio />
       <Services />
       <HowWeWork />
       <DashboardMockup />

@@ -1,14 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, ButtonHTMLAttributes } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
-interface MagneticButtonProps {
+interface MagneticButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onDrag" | "onDragStart" | "onDragEnd" | "onDragOver" | "onAnimationStart" | "style"> {
   children: React.ReactNode;
   variant?: "primary" | "secondary" | "outline";
   size?: "sm" | "md" | "lg";
-  className?: string;
-  onClick?: () => void;
 }
 
 export default function MagneticButton({
@@ -16,7 +14,8 @@ export default function MagneticButton({
   variant = "primary",
   size = "md",
   className = "",
-  onClick,
+  type = "button",
+  ...props
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -56,10 +55,11 @@ export default function MagneticButton({
       ref={ref}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
-      onClick={onClick}
+      type={type}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props}
     >
       {children}
     </motion.button>
