@@ -5,14 +5,6 @@ import ScrollReveal from "./ScrollReveal";
 
 const projects = [
   {
-    title: "CMI Prototype",
-    description:
-      "A full homepage redesign for Carring Minds International, built in one day before any brief was given. The most relevant sample we can show you.",
-    type: "Web Design · Healthcare",
-    image: "/portfolio/carring-minds.webp",
-    url: "https://carringmindsinternational-agenticbros.netlify.app",
-  },
-  {
     title: "Likhit Pen",
     description:
       "Premium stationery e-commerce store with product showcase and smooth checkout experience.",
@@ -35,14 +27,6 @@ const projects = [
     type: "Static · Mobile-first",
     image: "/portfolio/sundarban.webp",
     url: "https://sundarbanxpress.in",
-  },
-  {
-    title: "Saumok Portfolio",
-    description:
-      "Personal portfolio with rich scroll animations, showcasing design and development work.",
-    type: "Portfolio · Animation-rich",
-    image: "/portfolio/saumok.webp",
-    url: "https://saumok-portfolio.vercel.app/",
   },
   {
     title: "Leadstiq",
@@ -76,6 +60,22 @@ const projects = [
     image: "/portfolio/pen-utsav.webp",
     url: "https://penutsav-shrish.netlify.app",
   },
+  {
+    title: "Financial Doctor Sandip",
+    description:
+      "Personal advisor website for a financial planner — services, claim assistance, and calculators, with WhatsApp-first lead capture.",
+    type: "Static · Lead Gen",
+    image: "/portfolio/financial-doctor-sandip.png",
+    url: "https://financialdoctorsandip.com",
+  },
+  {
+    title: "Portfolio Website",
+    description:
+      "Personal portfolio with rich scroll animations, showcasing design and development work.",
+    type: "Portfolio · Animation-rich",
+    image: "/portfolio/saumok.webp",
+    url: "https://saumok-portfolio.vercel.app/",
+  },
 ];
 
 function PortfolioCard({
@@ -103,12 +103,19 @@ function PortfolioCard({
       {/* Thumbnail */}
       <div
         className="h-36 flex-none relative overflow-hidden border-b border-white/[0.06]"
-        style={{
-          backgroundImage: `url('${project.image}')`,
-          backgroundSize: "cover",
-          backgroundPosition: "top center",
-          backgroundRepeat: "no-repeat",
-        }}
+        style={
+          project.image
+            ? {
+                backgroundImage: `url('${project.image}')`,
+                backgroundSize: "cover",
+                backgroundPosition: "top center",
+                backgroundRepeat: "no-repeat",
+              }
+            : {
+                background:
+                  "linear-gradient(135deg, #0a0f1c 0%, #0d1829 50%, #091520 100%)",
+              }
+        }
       >
         {/* Shimmer sweep on hover */}
         <div
